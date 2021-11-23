@@ -1,0 +1,20 @@
+### User signup endpoint
+POST http://localhost:8090/v1/user
+Content-Type: application/json
+
+{
+    "name": "Zackvfdxgd",
+    "company": "Zavien tecvxvxh",
+    "address": "New York, USA",
+    "phone": "876765654564",
+    "email": "zhgbhjfhjg@gmail.com",
+    "password": "zacggfk124e"
+}
+
+### User signin endpoint
+POST http://localhost:8090/v1/user/login
+Content-Type: application/json
+
+{    
+    "email": "zhgbhjfhjg@gmail.com"
+}
