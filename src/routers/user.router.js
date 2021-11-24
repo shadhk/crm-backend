@@ -1,8 +1,9 @@
 const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
-const router = express.Router()
-
 const { insertUser, getUserByEmail } = require("../model/user/User.model")
+const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
+
+const router = express.Router()
 
 router.all("/", (req, res, next) => {
   // res.json({ message: "return from user router" })
@@ -56,9 +57,14 @@ router.post("/login", async (req, res) => {
   if (!pwdDb) return res.status(400).json({ status: "error", message: "Invalid email or password!" })
 
   const result = await comparePassword(password, pwdDb)
-  console.log(result)
 
-  res.status(200).json({ status: "success", message: "Login Successfully" })
+  if (!result) {
+    return res.status(400).json({ status: "error", message: "Invalid email or password!" })
+  }
+  const accessJWT = await createAccessJWT(user.email)
+  const refreshJWT = await createRefreshJWT(user.email)
+
+  res.status(200).json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
 })
 
 module.exports = router
