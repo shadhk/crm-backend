@@ -5,12 +5,12 @@ const UserSchema = new Schema({
   name: {
     type: String,
     max: 50,
-    require: true
+    required: true
   },
   company: {
     type: String,
     max: 50,
-    require: true
+    required: true
   },
   address: {
     type: String,
@@ -24,14 +24,26 @@ const UserSchema = new Schema({
     type: String,
     trim: true,
     max: 50,
-    require: true,
+    required: true,
     unique: true
   },
   password: {
     type: String,
     min: 8,
     max: 50,
-    require: true
+    required: true
+  },
+  refreshJWT: {
+    token: {
+      type: String,
+      max: 500,
+      default: ""
+    },
+    addedAt: {
+      type: Date,
+      required: true,
+      default: Date.now()
+    }
   }
 })
 

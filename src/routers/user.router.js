@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({ status: "error", message: "Invalid email or password!" })
   }
   const accessJWT = await createAccessJWT(user.email, `${user._id}`)
-  const refreshJWT = await createRefreshJWT(user.email)
+  const refreshJWT = await createRefreshJWT(user.email, `${user._id}`)
 
   res.status(200).json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
 })
