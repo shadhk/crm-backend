@@ -2,6 +2,7 @@ const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
 const { insertUser, getUserByEmail } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
+const { userAuthorization } = require("../middlewares/authorization.middleware")
 
 const router = express.Router()
 
@@ -9,6 +10,20 @@ router.all("/", (req, res, next) => {
   // res.json({ message: "return from user router" })
 
   next()
+})
+
+// Get user profile router
+router.get("/", userAuthorization, (req, res) => {
+  //this data coming from database
+  const user = {
+    name: "Zackvfdxgd",
+    company: "Zavien tecvxvxh",
+    address: "New York, USA",
+    phone: "876765654564",
+    email: "zhgbhjfhjg@gmail.com",
+    password: "zacggfk124e"
+  }
+  res.json({ user })
 })
 
 // Create new user route

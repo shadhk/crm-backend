@@ -19,3 +19,7 @@ Content-Type: application/json
     "email": "jarvis.mechtech@gmail.com",
     "password": "jarvis123"
 }
+
+### Get User profile endpoint
+GET http://localhost:8090/v1/user
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2Mzg1NTcyMjEsImV4cCI6MTYzODU1ODEyMX0.dxnc6awLKJpfkOMA1W59t31FoQXxHvgCYLRuEG9b8UU
