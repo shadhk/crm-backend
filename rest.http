@@ -22,4 +22,10 @@ Content-Type: application/json
 
 ### Get User profile endpoint
 GET http://localhost:8090/v1/user
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2Mzg1NTcyMjEsImV4cCI6MTYzODU1ODEyMX0.dxnc6awLKJpfkOMA1W59t31FoQXxHvgCYLRuEG9b8UU
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAxNjY5MDksImV4cCI6MTY0MDE2NzgwOX0.3YMdgb1Kc9EDq54lU-oCuedw_RTof28lIsx82-HTjak
+
+### Token routers
+
+### Get refreshed token
+GET http://localhost:8090/v1/tokens
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAzNTcwMDMsImV4cCI6MTY0Mjk0OTAwM30.gAkNYM97sni5NGyD8wN8-eP5r_RG0_jT1RRcFFUYOA8

@@ -8,7 +8,7 @@ client.on("error", function (error) {
 const setJWT = (key, value) => {
   return new Promise((resolve, reject) => {
     try {
-      client.set(key, value, (err, res) => {
+      return client.set(key, value, (err, res) => {
         if (err) reject(err)
         resolve(res)
       })
@@ -21,7 +21,7 @@ const setJWT = (key, value) => {
 const getJWT = key => {
   return new Promise((resolve, reject) => {
     try {
-      client.set(key, (err, res) => {
+      client.get(key, (err, res) => {
         if (err) reject(err)
         resolve(res)
       })
@@ -31,7 +31,16 @@ const getJWT = key => {
   })
 }
 
+const deleteJWT = key => {
+  try {
+    client.del(key)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   setJWT,
-  getJWT
+  getJWT,
+  deleteJWT
 }

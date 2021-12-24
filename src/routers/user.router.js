@@ -1,6 +1,6 @@
 const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
-const { insertUser, getUserByEmail } = require("../model/user/User.model")
+const { insertUser, getUserByEmail, getUserById } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 
@@ -13,17 +13,13 @@ router.all("/", (req, res, next) => {
 })
 
 // Get user profile router
-router.get("/", userAuthorization, (req, res) => {
+router.get("/", userAuthorization, async (req, res) => {
   //this data coming from database
-  const user = {
-    name: "Zackvfdxgd",
-    company: "Zavien tecvxvxh",
-    address: "New York, USA",
-    phone: "876765654564",
-    email: "zhgbhjfhjg@gmail.com",
-    password: "zacggfk124e"
-  }
-  res.json({ user })
+  const _id = req.user_id
+
+  const userProf = await getUserById(_id)
+
+  res.json({ user: userProf })
 })
 
 // Create new user route

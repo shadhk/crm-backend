@@ -4,13 +4,13 @@ const { storeUserRefreshJWT } = require("../model/user/User.model")
 
 const createAccessJWT = async (email, _id) => {
   try {
-    const accessJWT = await jwt.sign({ email }, process.env.JWT_ACCESS_KEY, { expiresIn: "15m" })
+    const accessJWT = await jwt.sign({ email }, process.env.JWT_ACCESS_KEY, { expiresIn: "1m" })
 
     await setJWT(accessJWT, _id)
 
     return Promise.resolve(accessJWT)
-  } catch (err) {
-    return Promise.reject(accessJWT)
+  } catch (error) {
+    return Promise.reject(error)
   }
 }
 
@@ -22,7 +22,7 @@ const createRefreshJWT = async (email, _id) => {
 
     return Promise.resolve(refreshJWT)
   } catch (error) {
-    return Promise.reject(refreshJWT)
+    return Promise.reject(error)
   }
 }
 
@@ -34,8 +34,17 @@ const verifyAccessJWT = userJWT => {
   }
 }
 
+const verifyRefreshJWT = userJWT => {
+  try {
+    return Promise.resolve(jwt.verify(userJWT, process.env.JWT_REFRESH_ACCESS_KEY))
+  } catch (error) {
+    return Promise.resolve(error)
+  }
+}
+
 module.exports = {
   createAccessJWT,
   createRefreshJWT,
-  verifyAccessJWT
+  verifyAccessJWT,
+  verifyRefreshJWT
 }

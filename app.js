@@ -5,9 +5,12 @@ const cors = require("cors")
 const helmet = require("helmet")
 const morgan = require("morgan")
 const mongoose = require("mongoose")
+const handleError = require("./src/utils/errorHandler")
+
+//Load routers
 const userRouter = require("./src/routers/user.router")
 const ticketRouter = require("./src/routers/ticket.router")
-const handleError = require("./src/utils/errorHandler")
+const tokensRouter = require("./src/routers/tokens.router")
 const port = process.env.PORT || 8090
 
 // Middleware
@@ -21,6 +24,7 @@ app.use(morgan("tiny"))
 //Use Routers
 app.use("/v1/user", userRouter)
 app.use("/v1/ticket", ticketRouter)
+app.use("/v1/tokens", tokensRouter)
 
 app.use((req, res, next) => {
   const error = new Error("Resource not found")
