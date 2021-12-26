@@ -1,3 +1,4 @@
+const { token } = require("morgan")
 const { UserSchema } = require("./User.Schema")
 
 const insertUser = userObj => {

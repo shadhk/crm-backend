@@ -16,16 +16,24 @@ POST http://localhost:8090/v1/user/login
 Content-Type: application/json
 
 {    
-    "email": "jarvis.mechtech@gmail.com",
-    "password": "jarvis123"
+    "email": "zhgbhjfhjg@gmail.com",
+    "password": "zacggfk124e"
 }
 
 ### Get User profile endpoint
 GET http://localhost:8090/v1/user
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAxNjY5MDksImV4cCI6MTY0MDE2NzgwOX0.3YMdgb1Kc9EDq54lU-oCuedw_RTof28lIsx82-HTjak
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAzNjIwODgsImV4cCI6MTY0MDM2MjE0OH0.hfJvvs6B3GG2HmEDQZhMDoBUP3ckpqJMrEqhvBQbOZo
 
 ### Token routers
 
 ### Get refreshed token
 GET http://localhost:8090/v1/tokens
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAzNTcwMDMsImV4cCI6MTY0Mjk0OTAwM30.gAkNYM97sni5NGyD8wN8-eP5r_RG0_jT1RRcFFUYOA8
+
+### Password Reset Endpoint
+POST http://localhost:8090/v1/user/reset-password
+Content-Type: application/json
+
+{    
+    "email": "jarvis.mechtech@gmail.com"
+}

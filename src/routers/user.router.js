@@ -3,6 +3,7 @@ const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
 const { insertUser, getUserByEmail, getUserById } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
+const { setPasswordResetPin } = require("../model/resetPin/ResetPin.model")
 
 const router = express.Router()
 
@@ -76,6 +77,20 @@ router.post("/login", async (req, res) => {
   const refreshJWT = await createRefreshJWT(user.email, `${user._id}`)
 
   res.status(200).json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
+})
+
+router.post("/reset-password", async (req, res) => {
+  const { email } = req.body
+
+  const user = await getUserByEmail(email)
+
+  if (user && user._id) {
+    const setPin = await setPasswordResetPin(email)
+
+    return res.status(200).json(setPin)
+  }
+
+  res.json({ status: "error", message: "If the email exist in our database, the password reset pin will be sent shortly." })
 })
 
 module.exports = router
