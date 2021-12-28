@@ -4,6 +4,7 @@ const { insertUser, getUserByEmail, getUserById } = require("../model/user/User.
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 const { setPasswordResetPin } = require("../model/resetPin/ResetPin.model")
+const { emailProcessor } = require("../helpers/email.helper")
 
 const router = express.Router()
 
@@ -86,8 +87,13 @@ router.post("/reset-password", async (req, res) => {
 
   if (user && user._id) {
     const setPin = await setPasswordResetPin(email)
+    const result = await emailProcessor(email, setPin.pin)
 
-    return res.status(200).json(setPin)
+    if (result && result.messageId) {
+      return res.json({ status: "success", message: "If the email exist in our database, the password reset pin will be sent shortly." })
+    }
+
+    return res.json({ status: "success", message: "unable to process your request at this moment. Please try again later." })
   }
 
   res.json({ status: "error", message: "If the email exist in our database, the password reset pin will be sent shortly." })
