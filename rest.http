@@ -7,8 +7,8 @@ Content-Type: application/json
     "company": "Zavien tecvxvxh",
     "address": "New York, USA",
     "phone": "876765654564",
-    "email": "zhgbhjfhjg@gmail.com",
-    "password": "zacggfk124e"
+    "email": "zidanez@gmail.com",
+    "password": "zidane123"
 }
 
 ### User signin endpoint
@@ -16,24 +16,34 @@ POST http://localhost:8090/v1/user/login
 Content-Type: application/json
 
 {    
-    "email": "zhgbhjfhjg@gmail.com",
-    "password": "zacggfk124e"
+    "email": "zidanez@gmail.com",
+    "password": "zidane123"
 }
 
 ### Get User profile endpoint
 GET http://localhost:8090/v1/user
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAzNjIwODgsImV4cCI6MTY0MDM2MjE0OH0.hfJvvs6B3GG2HmEDQZhMDoBUP3ckpqJMrEqhvBQbOZo
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InppZGFuZUBnbWFpbC5jb20iLCJpYXQiOjE2NDA1MTMyNjcsImV4cCI6MTY0MDUxMzMyN30.Cn4_XzRcU8TLsmRvhUylxNXze7UCHqWOQho3dWtHnlk
 
 ### Token routers
 
 ### Get refreshed token
 GET http://localhost:8090/v1/tokens
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphcnZpcy5tZWNodGVjaEBnbWFpbC5jb20iLCJpYXQiOjE2NDAzNTcwMDMsImV4cCI6MTY0Mjk0OTAwM30.gAkNYM97sni5NGyD8wN8-eP5r_RG0_jT1RRcFFUYOA8
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InppZGFuZUBnbWFpbC5jb20iLCJpYXQiOjE2NDA1MTMyNjcsImV4cCI6MTY0MzEwNTI2N30.U-seqRajubQA6vtVlYd8fblzxNrDp70Jt0GsaFKwqoY
 
 ### Password Reset Endpoint
 POST http://localhost:8090/v1/user/reset-password
 Content-Type: application/json
 
 {    
-    "email": "jarvis.mechtech@gmail.com"
+    "email": "zidanez@gmail.com"
+}
+
+### Update New password Endpoint
+PATCH http://localhost:8090/v1/user/reset-password
+Content-Type: application/json
+
+{    
+    "email": "zidanez@gmail.com",
+    "pin": 605618,
+    "newPassword": "somethingpassword"
 }

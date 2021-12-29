@@ -1,9 +1,9 @@
 const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
-const { insertUser, getUserByEmail, getUserById } = require("../model/user/User.model")
+const { insertUser, getUserByEmail, getUserById, updatePassword } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
-const { setPasswordResetPin } = require("../model/resetPin/ResetPin.model")
+const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model")
 const { emailProcessor } = require("../helpers/email.helper")
 
 const router = express.Router()
@@ -24,7 +24,7 @@ router.get("/", userAuthorization, async (req, res) => {
   res.json({ user: userProf })
 })
 
-// Create new user route
+// Create new user router
 router.post("/", async (req, res) => {
   try {
     const { name, company, address, phone, email, password } = req.body
@@ -32,6 +32,12 @@ router.post("/", async (req, res) => {
     if (!name) return res.status(400).send("Name is required")
     if (!password || password.length < 8) {
       return res.status(400).send("Password is required and should be min 8 characters long")
+    }
+
+    const emailExist = await getUserByEmail(email)
+
+    if (emailExist) {
+      return res.status(403).json({ status: "Email already exist", message: "Please use this email to login" })
     }
 
     //hash password
@@ -80,6 +86,7 @@ router.post("/login", async (req, res) => {
   res.status(200).json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
 })
 
+// Password reset pin route
 router.post("/reset-password", async (req, res) => {
   const { email } = req.body
 
@@ -87,16 +94,46 @@ router.post("/reset-password", async (req, res) => {
 
   if (user && user._id) {
     const setPin = await setPasswordResetPin(email)
-    const result = await emailProcessor(email, setPin.pin)
+    await emailProcessor({ email, pin: setPin.pin, type: "request-new-password" })
 
-    if (result && result.messageId) {
-      return res.json({ status: "success", message: "If the email exist in our database, the password reset pin will be sent shortly." })
-    }
-
-    return res.json({ status: "success", message: "unable to process your request at this moment. Please try again later." })
+    return res.json({ status: "success", message: "If the email exist in our database, the password reset pin will be sent shortly." })
   }
 
   res.json({ status: "error", message: "If the email exist in our database, the password reset pin will be sent shortly." })
+})
+
+// update new password
+router.patch("/reset-password", async (req, res) => {
+  const { email, pin, newPassword } = req.body
+
+  const getPin = await getPinByEmailPin(email, pin)
+  if (getPin._id) {
+    const dbDate = getPin.addedAt
+    const expiresIn = 1
+
+    let expDate = dbDate.setDate(dbDate.getDate()) + expiresIn
+
+    const today = new Date()
+
+    if (today < expDate) {
+      return res.json({ status: "error", message: "Invalid or required pin" })
+    }
+
+    // encrypt password
+    const hashedPass = await hashPassword(newPassword)
+
+    const user = await updatePassword(email, hashedPass)
+
+    if (user._id) {
+      //send email notification
+      await emailProcessor({ email, type: "password-update-success" })
+
+      deletePin(email, pin)
+
+      return res.json({ status: "success", message: "Your password has been updated" })
+    }
+  }
+  res.json({ status: "error", message: "Unable to update your password. Please try again later." })
 })
 
 module.exports = router
