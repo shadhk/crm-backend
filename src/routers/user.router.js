@@ -5,6 +5,7 @@ const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model")
 const { emailProcessor } = require("../helpers/email.helper")
+const { resetPasswordReqValidation, updatePasswordReqValidation } = require("../middlewares/formValidation.middleware")
 
 const router = express.Router()
 
@@ -87,7 +88,7 @@ router.post("/login", async (req, res) => {
 })
 
 // Password reset pin route
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", resetPasswordReqValidation, async (req, res) => {
   const { email } = req.body
 
   const user = await getUserByEmail(email)
@@ -103,7 +104,7 @@ router.post("/reset-password", async (req, res) => {
 })
 
 // update new password
-router.patch("/reset-password", async (req, res) => {
+router.patch("/reset-password", updatePasswordReqValidation, async (req, res) => {
   const { email, pin, newPassword } = req.body
 
   const getPin = await getPinByEmailPin(email, pin)
