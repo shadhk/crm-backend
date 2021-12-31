@@ -1,11 +1,12 @@
 const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
-const { insertUser, getUserByEmail, getUserById, updatePassword } = require("../model/user/User.model")
+const { insertUser, getUserByEmail, getUserById, updatePassword, storeUserRefreshJWT } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model")
 const { emailProcessor } = require("../helpers/email.helper")
 const { resetPasswordReqValidation, updatePasswordReqValidation } = require("../middlewares/formValidation.middleware")
+const { deleteJWT } = require("../helpers/redis.helper")
 
 const router = express.Router()
 
@@ -135,6 +136,24 @@ router.patch("/reset-password", updatePasswordReqValidation, async (req, res) =>
     }
   }
   res.json({ status: "error", message: "Unable to update your password. Please try again later." })
+})
+
+// User Logout and invalidate jwt
+router.delete("/logout", userAuthorization, async (req, res) => {
+  const { authorization } = req.headers
+  //this data coming from database
+  const _id = req.user_id
+
+  // delete accessJWT from redis database
+  deleteJWT(authorization)
+
+  // delete refreshJWT from mongodb
+  const result = await storeUserRefreshJWT(_id, "")
+
+  if (result._id) {
+    return res.json({ status: "success", message: "loged out successfully" })
+  }
+  res.json({ status: "error", message: "unable to log you out, please try agin later." })
 })
 
 module.exports = router
