@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { insertTicket, getTickets, getTicketById } = require("../model/ticket/Ticket.Model")
+const { insertTicket, getTickets, getTicketById, updateClientReply, updateStatusClose, deleteTicket } = require("../model/ticket/Ticket.Model")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 
 router.all("/", (req, res, next) => {
@@ -49,12 +49,69 @@ router.get("/", userAuthorization, async (req, res) => {
 })
 
 //get specific tickets for a specific user only
-router.get("/:ticket_id", userAuthorization, async (req, res) => {
+router.get("/:_id", userAuthorization, async (req, res) => {
   try {
-    const { ticket_id } = req.params
-    const client_id = req.user_id
-    const result = await getTicketById(ticket_id, client_id)
+    const { _id } = req.params
+    const clientId = req.user_id
+    const result = await getTicketById(_id, clientId)
     return res.json({ status: "success", result })
+  } catch (error) {
+    res.json({ status: "error", message: error.message })
+  }
+})
+
+//update reply message from client
+router.put("/:_id", userAuthorization, async (req, res) => {
+  try {
+    const { message, sender } = req.body
+    const { _id } = req.params
+    const clientId = req.user_id
+
+    const result = await updateClientReply({ _id, clientId, message, sender })
+
+    if (result._id) {
+      return res.json({
+        status: "success",
+        message: "Your message updated"
+      })
+    }
+    res.json({ status: "error", message: "unable to update your message, please try again later." })
+  } catch (error) {
+    res.json({ status: "error", message: error.message })
+  }
+})
+
+//update ticket status to close
+router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
+  try {
+    const { _id } = req.params
+    const clientId = req.user_id
+
+    const result = await updateStatusClose({ _id, clientId })
+    if (result._id) {
+      return res.json({
+        status: "success",
+        message: "The ticket has been closed."
+      })
+    }
+    res.json({ status: "error", message: "unable to update the ticket." })
+  } catch (error) {
+    res.json({ status: "error", message: error.message })
+  }
+})
+
+//delete a ticket
+router.delete("/:_id", userAuthorization, async (req, res) => {
+  try {
+    const { _id } = req.params
+    const clientId = req.user_id
+
+    const result = await deleteTicket({ _id, clientId })
+
+    return res.json({
+      status: "success",
+      message: "The ticket has been deleted."
+    })
   } catch (error) {
     res.json({ status: "error", message: error.message })
   }
