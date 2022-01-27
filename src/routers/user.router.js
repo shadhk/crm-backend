@@ -23,7 +23,15 @@ router.get("/", userAuthorization, async (req, res) => {
 
   const userProf = await getUserById(_id)
 
-  res.json({ user: userProf })
+  const { name, email } = userProf
+
+  res.json({
+    user: {
+      _id,
+      name,
+      email
+    }
+  })
 })
 
 // Create new user router
@@ -68,24 +76,24 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body
 
   if (!email || !password) {
-    return res.status(400).json({ status: "error", message: "Invalid Form Submission" })
+    return res.json({ status: "error", message: "Invalid Form Submission" })
   }
 
   const user = await getUserByEmail(email)
 
   const pwdDb = user && user._id ? user.password : null
 
-  if (!pwdDb) return res.status(400).json({ status: "error", message: "Invalid email or password!" })
+  if (!pwdDb) return res.json({ status: "error", message: "Invalid email or password!" })
 
   const result = await comparePassword(password, pwdDb)
 
   if (!result) {
-    return res.status(400).json({ status: "error", message: "Invalid email or password!" })
+    return res.json({ status: "error", message: "Invalid email or password!" })
   }
   const accessJWT = await createAccessJWT(user.email, `${user._id}`)
   const refreshJWT = await createRefreshJWT(user.email, `${user._id}`)
 
-  res.status(200).json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
+  res.json({ status: "success", message: "Login Successfully", accessJWT, refreshJWT })
 })
 
 // Password reset pin route

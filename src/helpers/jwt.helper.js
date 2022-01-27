@@ -4,7 +4,7 @@ const { storeUserRefreshJWT } = require("../model/user/User.model")
 
 const createAccessJWT = async (email, _id) => {
   try {
-    const accessJWT = await jwt.sign({ email }, process.env.JWT_ACCESS_KEY, { expiresIn: "15m" })
+    const accessJWT = await jwt.sign({ email }, process.env.JWT_ACCESS_KEY, { expiresIn: "1d" })
 
     await setJWT(accessJWT, _id)
 
