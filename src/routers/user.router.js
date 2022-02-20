@@ -39,16 +39,16 @@ router.post("/", async (req, res) => {
   try {
     const { name, company, address, phone, email, password } = req.body
     //validation
-    if (!name) return res.status(400).send("Name is required")
-    if (!password || password.length < 8) {
-      return res.status(400).send("Password is required and should be min 8 characters long")
-    }
+    // if (!name) return res.send("Name is required")
+    // if (!password || password.length < 8) {
+    //   return res.send("Password is required and should be min 8 characters long")
+    // }
 
-    const emailExist = await getUserByEmail(email)
+    // const emailExist = await getUserByEmail(email)
 
-    if (emailExist) {
-      return res.status(403).json({ status: "Email already exist", message: "Please use this email to login" })
-    }
+    // if (emailExist) {
+    //   return res.status(403).json({ status: "Email already exist", message: "Please use this email to login" })
+    // }
 
     //hash password
     const hashedPassword = await hashPassword(password)
@@ -64,10 +64,14 @@ router.post("/", async (req, res) => {
 
     const result = await insertUser(newUserObj)
     console.log(result)
-    res.status(200).json({ message: "New user created successfully", result })
+    res.json({ status: "success", message: "New user registration has been created successfully", result })
   } catch (error) {
     console.log(error)
-    res.json({ status: "error", message: error.message })
+    let message = "Unable to create new user at the moment, Please try again or contact administration"
+    if (error.message.includes("duplicate key error collection")) {
+      message = "this email already has an account"
+    }
+    res.json({ status: "error", message })
   }
 })
 
