@@ -3,6 +3,7 @@ const Joi = require("joi")
 const email = Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
 
 const pin = Joi.number().integer().min(000000).max(999999).required()
+const phone = Joi.number().min(6000000001).max(9000000009).required()
 
 const newPassword = Joi.string().alphanum().min(3).max(30).required()
 
@@ -62,9 +63,29 @@ const replyTicketMessageValidation = (req, res, next) => {
   next()
 }
 
+const newUserValidation = (req, res, next) => {
+  const schema = Joi.object({
+    name: shortStr.required(),
+    company: shortStr.required(),
+    address: shortStr.required(),
+    phone: phone,
+    email: email.required(),
+    password: shortStr.required()
+  })
+
+  const value = schema.validate(req.body)
+
+  if (value.error) {
+    return res.json({ status: "error", message: value.error.message })
+  }
+
+  next()
+}
+
 module.exports = {
   resetPasswordReqValidation,
   updatePasswordReqValidation,
   createNewTicketValidation,
-  replyTicketMessageValidation
+  replyTicketMessageValidation,
+  newUserValidation
 }

@@ -1,12 +1,14 @@
 const express = require("express")
 const { hashPassword, comparePassword } = require("../helpers/bcrypt.helper")
-const { insertUser, getUserByEmail, getUserById, updatePassword, storeUserRefreshJWT } = require("../model/user/User.model")
+const { insertUser, getUserByEmail, getUserById, updatePassword, storeUserRefreshJWT, verifyUser } = require("../model/user/User.model")
 const { createAccessJWT, createRefreshJWT } = require("../helpers/jwt.helper")
 const { userAuthorization } = require("../middlewares/authorization.middleware")
 const { setPasswordResetPin, getPinByEmailPin, deletePin } = require("../model/resetPin/ResetPin.model")
 const { emailProcessor } = require("../helpers/email.helper")
-const { resetPasswordReqValidation, updatePasswordReqValidation } = require("../middlewares/formValidation.middleware")
+const { resetPasswordReqValidation, updatePasswordReqValidation, newUserValidation } = require("../middlewares/formValidation.middleware")
 const { deleteJWT } = require("../helpers/redis.helper")
+
+const verificationURL = "http://localhost:3000/verification/"
 
 const router = express.Router()
 
@@ -34,21 +36,29 @@ router.get("/", userAuthorization, async (req, res) => {
   })
 })
 
+//verify user after user is signup
+router.patch("/verify", async (req, res) => {
+  //this data coming from database
+  try {
+    const { _id, email } = req.body
+
+    //update our user database
+    const result = await verifyUser(_id, email)
+
+    if (result && result._id) {
+      return res.json({ status: "success", message: "Your account has been activated, you may login now." })
+    }
+
+    return res.json({ status: "error", message: "Invalid request!" })
+  } catch (error) {
+    return res.json({ status: "error", message: "Invalid request!" })
+  }
+})
+
 // Create new user router
-router.post("/", async (req, res) => {
+router.post("/", newUserValidation, async (req, res) => {
   try {
     const { name, company, address, phone, email, password } = req.body
-    //validation
-    // if (!name) return res.send("Name is required")
-    // if (!password || password.length < 8) {
-    //   return res.send("Password is required and should be min 8 characters long")
-    // }
-
-    // const emailExist = await getUserByEmail(email)
-
-    // if (emailExist) {
-    //   return res.status(403).json({ status: "Email already exist", message: "Please use this email to login" })
-    // }
 
     //hash password
     const hashedPassword = await hashPassword(password)
@@ -64,6 +74,12 @@ router.post("/", async (req, res) => {
 
     const result = await insertUser(newUserObj)
     console.log(result)
+
+    await emailProcessor({
+      email,
+      type: "new-user-confirmation-required",
+      verificationLink: verificationURL + result._id + "/" + email
+    })
     res.json({ status: "success", message: "New user registration has been created successfully", result })
   } catch (error) {
     console.log(error)
@@ -84,6 +100,10 @@ router.post("/login", async (req, res) => {
   }
 
   const user = await getUserByEmail(email)
+
+  if (!user.isVerified) {
+    return res.json({ status: "error", message: "Your account has not been verified. Please check your email to verify your account" })
+  }
 
   const pwdDb = user && user._id ? user.password : null
 

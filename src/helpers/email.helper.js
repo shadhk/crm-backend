@@ -29,7 +29,7 @@ const send = info => {
   })
 }
 
-const emailProcessor = ({ email, pin, type }) => {
+const emailProcessor = ({ email, pin, type, verificationLink = "" }) => {
   let info = ""
   switch (type) {
     case "request-new-password":
@@ -57,6 +57,21 @@ const emailProcessor = ({ email, pin, type }) => {
       <b>Hello </b>
       Your new Password has been updated.
       </p>` // html body
+      }
+      send(info)
+      break
+    case "new-user-confirmation-required":
+      info = {
+        from: '"Ramiro Durgan" <ramiro.durgan11@ethereal.email>', // sender address
+        to: email, // list of receivers
+        subject: "Verification required before login to new account.", // Subject line
+        text: "Please follow the link to very your account before you can login.", // plain text body
+        html: `<p>
+      <b>Hello </b>
+      Please follow the link to very your account before you can login.
+      </p>
+      <p>${verificationLink}</p> 
+      ` // html body
       }
       send(info)
       break
