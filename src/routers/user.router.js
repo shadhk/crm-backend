@@ -101,6 +101,10 @@ router.post("/login", async (req, res) => {
 
   const user = await getUserByEmail(email)
 
+  if (!user) {
+    return res.json({ status: "error", message: "Account does not exist." })
+  }
+
   if (!user.isVerified) {
     return res.json({ status: "error", message: "Your account has not been verified. Please check your email to verify your account" })
   }
