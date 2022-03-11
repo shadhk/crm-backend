@@ -131,13 +131,19 @@ router.post("/reset-password", resetPasswordReqValidation, async (req, res) => {
   const user = await getUserByEmail(email)
 
   if (user && user._id) {
+    /// create// 2. create unique 6 digit pin
     const setPin = await setPasswordResetPin(email)
-    await emailProcessor({ email, pin: setPin.pin, type: "request-new-password" })
-
-    return res.json({ status: "success", message: "If the email exist in our database, the password reset pin will be sent shortly." })
+    await emailProcessor({
+      email,
+      pin: setPin.pin,
+      type: "request-new-password"
+    })
   }
 
-  res.json({ status: "error", message: "If the email exist in our database, the password reset pin will be sent shortly." })
+  res.json({
+    status: "success",
+    message: "If the email is exist in our database, the password reset pin will be sent shortly."
+  })
 })
 
 // update new password
@@ -145,7 +151,7 @@ router.patch("/reset-password", updatePasswordReqValidation, async (req, res) =>
   const { email, pin, newPassword } = req.body
 
   const getPin = await getPinByEmailPin(email, pin)
-  if (getPin._id) {
+  if (getPin?._id) {
     const dbDate = getPin.addedAt
     const expiresIn = 1
 

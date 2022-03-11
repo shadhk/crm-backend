@@ -11,6 +11,7 @@ const setPasswordResetPin = async email => {
     email,
     pin: randPin
   }
+
   return new Promise((resolve, reject) => {
     ResetPinSchema(resetobj)
       .save()
